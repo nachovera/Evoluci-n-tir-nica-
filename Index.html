@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolución Acuática: De Pez a Megalodón</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c1b33, #0a3d62, #0c1b33);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 1100px;
+            background: rgba(0, 20, 40, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #00c8ff;
+            margin-bottom: 30px;
+        }
+        
+        header {
+            padding: 20px;
+            background: rgba(0, 10, 30, 0.9);
+            text-align: center;
+            border-bottom: 2px solid #00c8ff;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00c8ff, #00ff95);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .game-area {
+            flex: 3;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            height: 550px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #00c8ff;
+            box-shadow: inset 0 0 20px rgba(0, 200, 255, 0.3);
+        }
+        
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #0c1b33, #0a3d62, #0c1b33);
+            cursor: pointer;
+        }
+        
+        .stats-panel {
+            flex: 1;
+            background: rgba(0, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #00c8ff;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .panel-section {
+            background: rgba(0, 40, 80, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #00c8ff;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            color: #00c8ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .evolution-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stage-indicator {
+            width: 100%;
+            height: 25px;
+            background: rgba(0, 40, 80, 0.7);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #00c8ff;
+        }
+        
+        .stage-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00c8ff, #00ff95);
+            border-radius: 12px;
+            width: 25%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 149, 0.5);
+        }
+        
+        .stage-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 60, 120, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #00c8ff;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 80, 160, 0.4);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00ff95;
+            margin-top: 5px;
+            text-shadow: 0 0 10px rgba(0, 255, 149, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .evolution-display-container {
+            position: relative;
+            height: 70px;
+        }
+        
+        .evolution-track {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(0, 200, 255, 0.3);
+            z-index: 1;
+        }
+        
+        .evolution-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00c8ff, #00ff95);
+            width: 25%;
+            transition: width 0.5s ease;
+        }
+        
+        .evolution-items {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .evolution-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .evolution-item.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .evolution-icon {
+            width: 40px;
+            height: 25px;
+            background: #00c8ff;
+            border-radius: 50% 50% 40% 40%;
+            margin-bottom: 8px;
+            position: relative;
+            box-shadow: 0 0 8px rgba(0, 200, 255, 0.7);
+        }
+        
+        .evolution-icon::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+        }
+        
+        .evolution-name {
+            font-size: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .evolution-item.final-stage .evolution-icon {
+            background: linear-gradient(90deg, #ff0000, #ff6600);
+            width: 50px;
+            height: 30px;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: rgba(0, 10, 30, 0.9);
+            border-top: 2px solid #00c8ff;
+        }
+        
+        .controls-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #00c8ff;
+            font-size: 1.3rem;
+        }
+        
+        .keys {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .key {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 40, 80, 0.7);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid #00c8ff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .key:hover {
+            transform: scale(1.05);
+            background: rgba(0, 80, 160, 0.7);
+        }
+        
+        .key-label {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: normal;
+            color: #00ff95;
+        }
+        
+        .instructions {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            background: rgba(0, 20, 40, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #00c8ff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .highlight {
+            color: #00ff95;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 149, 0.7);
+        }
+        
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .game-btn {
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #00c8ff, #00ff95);
+            border: none;
+            border-radius: 50px;
+            color: #0c1b33;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .game-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .game-btn.secondary {
+            background: linear-gradient(90deg, #ffcc00, #ff6600);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #00c8ff;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .game-area {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .keys {
+                gap: 15px;
+            }
+            
+            .key {
+                width: 60px;
+                height: 60px;
+                font-size: 1.3rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Animación de burbujas de fondo */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: rise 15s infinite ease-in;
+        }
+        
+        .bubble:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+            width: 15px;
+            height: 15px;
+        }
+        
+        .bubble:nth-child(2) {
+            left: 20%;
+            animation-delay: 2s;
+            width: 25px;
+            height: 25px;
+        }
+        
+        .bubble:nth-child(3) {
+            left: 35%;
+            animation-delay: 4s;
+            width: 10px;
+            height: 10px;
+        }
+        
+        .bubble:nth-child(4) {
+            left: 50%;
+            animation-delay: 0s;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .bubble:nth-child(5) {
+            left: 65%;
+            animation-delay: 6s;
+            width: 22px;
+            height: 22px;
+        }
+        
+        .bubble:nth-child(6) {
+            left: 75%;
+            animation-delay: 3s;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .bubble:nth-child(7) {
+            left: 90%;
+            animation-delay: 8s;
+            width: 28px;
+            height: 28px;
+        }
+        
+        @keyframes rise {
+            0% {
+                bottom: -100px;
+                transform: translateX(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(50px);
+                opacity: 0.6;
+            }
+            100% {
+                bottom: 1000px;
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="game-container">
+        <header>
+            <h1>Evolución Acuática</h1>
+            <p class="subtitle">Controla un pequeño pez que come bacterias para evolucionar hasta convertirse en el temible Megalodón</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="game-area">
+                <canvas id="game-canvas"></canvas>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="panel-section">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Estado de Evolución</h2>
+                    
+                    <div class="evolution-stage">
+                        <div class="stage-info">
+                            <span>Pez Pequeño</span>
+                            <span>Pez Mediano</span>
+                        </div>
+                        <div class="stage-indicator">
+                            <div class="stage-progress" id="stage-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="stage-info">
+                            <span id="current-points">0</span>
+                            <span id="next-stage">500</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2 class="section-title"><i class="fas fa-fish"></i> Estadísticas</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label"><i class="fas fa-bacteria"></i> Bacterias</div>
+                            <div class="stat-value" id="bacteria-count">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label"><i class="fas fa-ruler"></i> Tamaño</div>
+                            <div class="stat-value" id="size-value">20cm</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label"><i class="fas fa-tachometer-alt"></i> Velocidad</div>
+                            <div class="stat-value" id="speed-value">5.0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label"><i class="fas fa-star"></i> Evolución</div>
+                            <div class="stat-value" id="evolution-points">0/500</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2 class="section-title"><i class="fas fa-code-branch"></i> Progreso</h2>
+                    
+                    <div class="evolution-display-container">
+                        <div class="evolution-track">
+                            <div class="evolution-progress" id="evolution-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="evolution-items">
+                            <div class="evolution-item active">
+                                <div class="evolution-icon"></div>
+                                <div class="evolution-name">Pez Pequeño</div>
+                            </div>
+                            <div class="evolution-item">
+                                <div class="evolution-icon"></div>
+                                <div class="evolution-name">Pez Mediano</div>
+                            </div>
+                            <div class="evolution-item">
+                                <div class="evolution-icon"></div>
+                                <div class="evolution-name">Pez Grande</div>
+                            </div>
+                            <div class="evolution-item">
+                                <div class="evolution-icon"></div>
+                                <div class="evolution-name">Tiburón</div>
+                            </div>
+                            <div class="evolution-item final-stage">
+                                <div class="evolution-icon"></div>
+                                <div class="evolution-name">MEGALODÓN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2 class="controls-title"><i class="fas fa-gamepad"></i> Controles del Juego</h2>
+            <div class="keys">
+                <div class="key">
+                    W
+                    <span class="key-label">Arriba</span>
+                </div>
+                <div class="key">
+                    A
+                    <span class="key-label">Izquierda</span>
+                </div>
+                <div class="key">
+                    S
+                    <span class="key-label">Abajo</span>
+                </div>
+                <div class="key">
+                    D
+                    <span class="key-label">Derecha</span>
+                </div>
+                <div class="key">
+                    ESP
+                    <span class="key-label">Acelerar</span>
+                </div>
+            </div>
+            
+            <div class="game-buttons">
+                <button class="game-btn" id="start-btn">
+                    <i class="fas fa-play"></i> Iniciar Juego
+                </button>
+                <button class="game-btn secondary" id="reset-btn">
+                    <i class="fas fa-redo"></i> Reiniciar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <p>¡Controla tu pez usando las teclas <span class="highlight">W, A, S, D</span> y come bacterias para crecer!</p>
+        <p>Presiona <span class="highlight">ESPACIO</span> para acelerar temporalmente. Evoluciona a través de 5 etapas hasta convertirte en un Megalodón.</p>
+        <p>¡Evita a los peces más grandes que podrían comerte! Tu objetivo es alcanzar la etapa final de Megalodón.</p>
+    </div>
+    
+    <footer>
+        <p>Juego desarrollado con HTML5, CSS3 y JavaScript | Evolución Acuática © 2023</p>
+    </footer>
+
+    <script>
+        // Configuración del juego
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Ajustar tamaño del canvas
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        
+        resizeCanvas();
+        
+        // Variables del juego
+        const gameState = {
+            player: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 20,
+                speed: 5,
+                color: '#00c8ff',
+                evolution: 0, // 0-4 (5 etapas)
+                bacteriaEaten: 0,
+                evolutionPoints: 0,
+                nextEvolution: 500,
+                maxSpeed: 8
+            },
+            bacteria: [],
+            enemies: [],
+            particles: [],
+            keys: {},
+            gameTime: 0,
+            bacteriaCount: 0,
+            spawnTimer: 0,
+            gameRunning: false,
+            gameOver: false
+        };
+        
+        // Clases del juego
+        class Bacteria {
+            constructor() {
+                this.size = Math.random() * 8 + 3;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.speed = Math.random() * 1 + 0.5;
+                this.color = `hsl(${Math.random() * 80 + 100}, 80%, 60%)`;
+                this.angle = Math.random() * Math.PI * 2;
+                this.pulse = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                // Movimiento aleatorio
+                this.angle += (Math.random() - 0.5) * 0.2;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.pulse += 0.05;
+                
+                // Reaparecer si sale de la pantalla
+                if (this.x < -this.size) this.x = canvas.width + this.size;
+                if (this.x > canvas.width + this.size) this.x = -this.size;
+                if (this.y < -this.size) this.y = canvas.height + this.size;
+                if (this.y > canvas.height + this.size) this.y = -this.size;
+            }
+            
+            draw() {
+                const pulseSize = this.size + Math.sin(this.pulse) * 1.5;
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Añadir brillo
+                ctx.beginPath();
+                ctx.arc(this.x - pulseSize/3, this.y - pulseSize/3, pulseSize/3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.fill();
+            }
+        }
+        
+        class Enemy {
+            constructor() {
+                this.size = Math.random() * 30 + 20;
+                this.x = Math.random() < 0.5 ? 
+                         -this.size : 
+                         canvas.width + this.size;
+                this.y = Math.random() * canvas.height;
+                this.speed = Math.random() * 2 + 1;
+                this.color = `hsl(${Math.random() * 60}, 80%, 50%)`;
+                this.angle = Math.atan2(
+                    canvas.height/2 - this.y, 
+                    canvas.width/2 - this.x
+                );
+                this.waveOffset = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                this.waveOffset += 0.05;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + Math.sin(this.waveOffset) * 1.5;
+                
+                // Eliminar si sale de la pantalla
+                if (this.x < -this.size * 2 || 
+                    this.x > canvas.width + this.size * 2 ||
+                    this.y < -this.size * 2 || 
+                    this.y > canvas.height + this.size * 2) {
+                    return false;
+                }
+                return true;
+            }
+            
+            draw() {
+                // Cuerpo
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y, this.size, this.size/1.5, 0, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Cola
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.size, this.y);
+                ctx.lineTo(this.x - this.size * 1.5, this.y - this.size/2);
+                ctx.lineTo(this.x - this.size * 1.5, this.y + this.size/2);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Ojo
+                ctx.beginPath();
+                ctx.arc(this.x + this.size/2, this.y - this.size/4, this.size/5, 0, Math.PI * 2);
+                ctx.fillStyle = 'black';
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(this.x + this.size/2 + 1, this.y - this.size/4 - 1, this.size/8, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                
+                // Aletas
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size/2);
+                ctx.lineTo(this.x + this.size/3, this.y - this.size);
+                ctx.lineTo(this.x + this.size/1.5, this.y - this.size/2);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+        
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = color;
+                this.life = 20;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life--;
+            }
+            
+            draw() {
+                ctx.globalAlpha = this.life / 20;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Funciones del juego
+        function spawnBacteria(count) {
+            for (let i = 0; i < count; i++) {
+                gameState.bacteria.push(new Bacteria());
+                gameState.bacteriaCount++;
+            }
+        }
+        
+        function spawnEnemy() {
+            gameState.enemies.push(new Enemy());
+        }
+        
+        function updatePlayer() {
+            // Movimiento con WASD
+            if (gameState.keys['KeyW'] || gameState.keys['ArrowUp']) {
+                gameState.player.y -= gameState.player.speed;
+            }
+            if (gameState.keys['KeyS'] || gameState.keys['ArrowDown']) {
+                gameState.player.y += gameState.player.speed;
+            }
+            if (gameState.keys['KeyA'] || gameState.keys['ArrowLeft']) {
+                gameState.player.x -= gameState.player.speed;
+            }
+            if (gameState.keys['KeyD'] || gameState.keys['ArrowRight']) {
+                gameState.player.x += gameState.player.speed;
+            }
+            
+            // Aceleración con espacio
+            if (gameState.keys['Space']) {
+                gameState.player.speed = gameState.player.maxSpeed * 1.5;
+            } else {
+                gameState.player.speed = gameState.player.maxSpeed;
+            }
+            
+            // Mantener al jugador dentro de los límites
+            gameState.player.x = Math.max(gameState.player.size, Math.min(canvas.width - gameState.player.size, gameState.player.x));
+            gameState.player.y = Math.max(gameState.player.size, Math.min(canvas.height - gameState.player.size, gameState.player.y));
+        }
+        
+        function checkCollisions() {
+            // Colisiones con bacterias
+            for (let i = gameState.bacteria.length - 1; i >= 0; i--) {
+                const b = gameState.bacteria[i];
+                const dx = gameState.player.x - b.x;
+                const dy = gameState.player.y - b.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < gameState.player.size + b.size) {
+                    // Comer bacteria
+                    gameState.bacteria.splice(i, 1);
+                    gameState.player.bacteriaEaten++;
+                    gameState.player.evolutionPoints += 10;
+                    
+                    // Crear partículas
+                    for (let j = 0; j < 5; j++) {
+                        gameState.particles.push(new Particle(b.x, b.y, b.color));
+                    }
+                    
+                    // Actualizar UI
+                    document.getElementById('bacteria-count').textContent = gameState.player.bacteriaEaten;
+                    document.getElementById('evolution-points').textContent = 
+                        `${gameState.player.evolutionPoints}/${gameState.player.nextEvolution}`;
+                    
+                    // Actualizar barra de progreso
+                    const progress = (gameState.player.evolutionPoints / gameState.player.nextEvolution) * 100;
+                    document.getElementById('stage-progress').style.width = `${progress}%`;
+                    document.getElementById('evolution-progress').style.width = `${progress}%`;
+                    document.getElementById('current-points').textContent = gameState.player.evolutionPoints;
+                    
+                    // Verificar evolución
+                    if (gameState.player.evolutionPoints >= gameState.player.nextEvolution) {
+                        evolvePlayer();
+                    }
+                }
+            }
+            
+            // Colisiones con enemigos
+            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+                const e = gameState.enemies[i];
+                const dx = gameState.player.x - e.x;
+                const dy = gameState.player.y - e.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < gameState.player.size + e.size) {
+                    if (gameState.player.size > e.size * 0.8) {
+                        // Comer enemigo
+                        gameState.enemies.splice(i, 1);
+                        gameState.player.evolutionPoints += 50;
+                        
+                        // Crear partículas
+                        for (let j = 0; j < 15; j++) {
+                            gameState.particles.push(new Particle(e.x, e.y, e.color));
+                        }
+                        
+                        // Actualizar UI
+                        document.getElementById('evolution-points').textContent = 
+                            `${gameState.player.evolutionPoints}/${gameState.player.nextEvolution}`;
+                        
+                        // Actualizar barra de progreso
+                        const progress = (gameState.player.evolutionPoints / gameState.player.nextEvolution) * 100;
+                        document.getElementById('stage-progress').style.width = `${progress}%`;
+                        document.getElementById('evolution-progress').style.width = `${progress}%`;
+                        document.getElementById('current-points').textContent = gameState.player.evolutionPoints;
+                        
+                        // Verificar evolución
+                        if (gameState.player.evolutionPoints >= gameState.player.nextEvolution) {
+                            evolvePlayer();
+                        }
+                    } else {
+                        // Perder vida o reiniciar
+                        gameOver();
+                    }
+                }
+            }
+        }
+        
+        function evolvePlayer() {
+            gameState.player.evolution++;
+            gameState.player.evolutionPoints = 0;
+            
+            // Aumentar tamaño y velocidad
+            gameState.player.size += 10;
+            gameState.player.maxSpeed += 0.5;
+            
+            // Actualizar requisitos para la próxima evolución
+            gameState.player.nextEvolution = 500 + (gameState.player.evolution * 500);
+            
+            // Actualizar UI
+            document.getElementById('size-value').textContent = `${gameState.player.size}cm`;
+            document.getElementById('speed-value').textContent = gameState.player.maxSpeed.toFixed(1);
+            document.getElementById('evolution-points').textContent = 
+                `${gameState.player.evolutionPoints}/${gameState.player.nextEvolution}`;
+            document.getElementById('next-stage').textContent = gameState.player.nextEvolution;
+            
+            // Actualizar barra de progreso
+            document.getElementById('stage-progress').style.width = '0%';
+            document.getElementById('evolution-progress').style.width = '0%';
+            
+            // Actualizar etapas de evolución
+            const evolutionItems = document.querySelectorAll('.evolution-item');
+            evolutionItems.forEach((item, index) => {
+                if (index <= gameState.player.evolution) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Cambiar color del jugador según la etapa
+            const colors = ['#00c8ff', '#00ff95', '#ffcc00', '#ff6600', '#ff0000'];
+            gameState.player.color = colors[gameState.player.evolution];
+            
+            // Comprobar si ha ganado
+            if (gameState.player.evolution >= 4) {
+                winGame();
+            }
+        }
+        
+        function gameOver() {
+            gameState.gameRunning = false;
+            gameState.gameOver = true;
+            
+            // Mostrar mensaje de fin de juego
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#ff0000';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('¡PERDISTE!', canvas.width/2, canvas.height/2 - 40);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.fillText('Un pez más grande te ha comido', canvas.width/2, canvas.height/2 + 20);
+            ctx.fillText('Presiona REINICIAR para jugar de nuevo', canvas.width/2, canvas.height/2 + 60);
+        }
+        
+        function winGame() {
+            gameState.gameRunning = false;
+            
+            // Mostrar mensaje de victoria
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff95';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('¡FELICITACIONES!', canvas.width/2, canvas.height/2 - 60);
+            
+            ctx.fillStyle = '#ffcc00';
+            ctx.font = 'bold 60px Arial';
+            ctx.fillText('MEGALODÓN', canvas.width/2, canvas.height/2 + 20);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.fillText('Has alcanzado la máxima evolución', canvas.width/2, canvas.height/2 + 80);
+        }
+        
+        function gameLoop() {
+            if (!gameState.gameRunning) return;
+            
+            // Limpiar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Actualizar tiempo del juego
+            gameState.gameTime++;
+            
+            // Generar bacterias
+            gameState.spawnTimer++;
+            if (gameState.spawnTimer > 30 && gameState.bacteria.length < 50) {
+                spawnBacteria(5);
+                gameState.spawnTimer = 0;
+            }
+            
+            // Generar enemigos
+            if (Math.random() < 0.01 && gameState.enemies.length < 5) {
+                spawnEnemy();
+            }
+            
+            // Actualizar jugador
+            updatePlayer();
+            
+            // Actualizar bacterias
+            gameState.bacteria.forEach(b => b.update());
+            
+            // Actualizar enemigos
+            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+                if (!gameState.enemies[i].update()) {
+                    gameState.enemies.splice(i, 1);
+                }
+            }
+            
+            // Actualizar partículas
+            for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                gameState.particles[i].update();
+                if (gameState.particles[i].life <= 0) {
+                    gameState.particles.splice(i, 1);
+                }
+            }
+            
+            // Comprobar colisiones
+            checkCollisions();
+            
+            // Dibujar elementos
+            gameState.particles.forEach(p => p.draw());
+            gameState.bacteria.forEach(b => b.draw());
+            gameState.enemies.forEach(e => e.draw());
+            
+            // Dibujar jugador
+            ctx.fillStyle = gameState.player.color;
+            ctx.beginPath();
+            ctx.ellipse(
+                gameState.player.x, 
+                gameState.player.y, 
+                gameState.player.size, 
+                gameState.player.size/1.5, 
+                0, 0, Math.PI * 2
+            );
+            ctx.fill();
+            
+            // Cola del jugador
+            ctx.beginPath();
+            ctx.moveTo(gameState.player.x - gameState.player.size, gameState.player.y);
+            ctx.lineTo(gameState.player.x - gameState.player.size * 1.5, gameState.player.y - gameState.player.size/2);
+            ctx.lineTo(gameState.player.x - gameState.player.size * 1.5, gameState.player.y + gameState.player.size/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Ojo del jugador
+            ctx.beginPath();
+            ctx.arc(
+                gameState.player.x + gameState.player.size/2, 
+                gameState.player.y - gameState.player.size/4, 
+                gameState.player.size/5, 
+                0, 
+                Math.PI * 2
+            );
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            
+            // Destello en el ojo
+            ctx.beginPath();
+            ctx.arc(
+                gameState.player.x + gameState.player.size/2 + 1, 
+                gameState.player.y - gameState.player.size/4 - 1, 
+                gameState.player.size/8, 
+                0, 
+                Math.PI * 2
+            );
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            
+            // Solicitar siguiente frame
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Inicialización del juego
+        function initGame() {
+            // Reiniciar estado del juego
+            gameState.player = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 20,
+                speed: 5,
+                color: '#00c8ff',
+                evolution: 0,
+                bacteriaEaten: 0,
+                evolutionPoints: 0,
+                nextEvolution: 500,
+                maxSpeed: 8
+            };
+            
+            gameState.bacteria = [];
+            gameState.enemies = [];
+            gameState.particles = [];
+            gameState.keys = {};
+            gameState.gameTime = 0;
+            gameState.bacteriaCount = 0;
+            gameState.spawnTimer = 0;
+            gameState.gameRunning = true;
+            gameState.gameOver = false;
+            
+            // Actualizar UI
+            document.getElementById('bacteria-count').textContent = '0';
+            document.getElementById('size-value').textContent = '20cm';
+            document.getElementById('speed-value').textContent = '5.0';
+            document.getElementById('evolution-points').textContent = '0/500';
+            document.getElementById('current-points').textContent = '0';
+            document.getElementById('next-stage').textContent = '500';
+            document.getElementById('stage-progress').style.width = '0%';
+            document.getElementById('evolution-progress').style.width = '0%';
+            
+            const evolutionItems = document.querySelectorAll('.evolution-item');
+            evolutionItems.forEach((item, index) => {
+                if (index === 0) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Generar bacterias iniciales
+            spawnBacteria(30);
+            
+            // Iniciar el bucle del juego
+            gameLoop();
+        }
+        
+        // Event Listeners
+        document.getElementById('start-btn').addEventListener('click', function() {
+            if (!gameState.gameRunning) {
+                initGame();
+            }
+        });
+        
+        document.getElementById('reset-btn').addEventListener('click', initGame);
+        
+        window.addEventListener('keydown', (e) => {
+            gameState.keys[e.code] = true;
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            gameState.keys[e.code] = false;
+        });
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Iniciar animaciones de burbujas
+        function createBubbles() {
+            const bubblesContainer = document.querySelector('.bubbles');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.animationDelay = `${Math.random() * 15}s`;
+                bubble.style.width = `${Math.random() * 20 + 5}px`;
+                bubble.style.height = bubble.style.width;
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+        
+        createBubbles();
+    </script>
+</body>
+</html>
